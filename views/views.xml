@@ -1,0 +1,112 @@
+<odoo>
+  <data>
+    <record id="gse_tracking_tree" model="ir.ui.view">
+      <field name="name">gse_tracking.view.tree</field>
+      <field name="model">project.task</field>
+      <field name="arch" type="xml">
+        <tree string="Tracking Purchases" delete="0" create="0" sample="1" multi_edit="1" decoration-info="fd_forwarder_method == 'airfreight'" decoration-success="fd_forwarder_method == 'seafreight'">
+          <field name="name" optional="hidden"/>
+          <field name="dp_date_approve" optional="show" widget="date"/>
+          <field name="final_supplier" optional="show"/>
+          <field name="dp_name" optional="show"/>
+          <field name="dp_po_state" optional="hide"/>
+          <field name="dp_billing_status" optional="show"/>
+
+          <field name="ip_date_approve" optional="hide" widget="date"/>
+          <field name="indirect_supplier" optional="hide"/>
+          <field name="ip_name" optional="show"/>
+          <field name="ip_po_state" optional="hide"/>
+          <field name="ip_date_scheduled" optional="show" widget="date"/>
+          <field name="at_receipt_status" optional="show"/>
+          <field name="ip_billing_status" optional="show"/>
+
+          <field name="fd_location_dest" optional="show"/>
+          <field name="fd_scheduled_date" optional="show" widget="date" readonly="False"/>
+          <field name="fd_receipt_status" optional="show"/>
+          <field name="dp_receipt_status" optional="hide"/>
+          <field name="fd_date_done" optional="show" widget="date"/>
+          
+          <field name="fd_forwarder" optional="show"/>
+          <field name="fd_forwarder_ref" optional="show"/>
+          <field name="fd_forwarder_method" optional="hide"/>
+          <field name="delivery_step" optional="show"/>
+          <field name="fd_departure_date" optional="show" readonly="False"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="gse_custo_action" model="ir.actions.act_window">
+      <field name="name">Tracking Purchase</field>
+      <field name="res_model">project.task</field>
+      <field name="domain">[("project_id", "ilike", "achat")]</field>
+      <field name="context">{"search_default_in_progress":1}</field>
+      <field name="view_mode">tree,form</field>
+      <field name="view_id" ref="gse_tracking_tree"/>
+    </record>
+
+    <record id="gse_purchase_tracking_task_form" model="ir.ui.view">
+      <field name="name">project.task.gse.inherit</field>
+      <field name="model">project.task</field>
+      <field name="inherit_id" ref="project.view_task_form2"/>
+      <field name="arch" type="xml">
+        <xpath expr="//form[1]/sheet[1]/group[1]/group[1]/field[@name='user_ids']" position="after">
+          <!-- 140 = Projet Achats Internationaux -->
+          <field name="sale_order" attrs="{'invisible': [['project_id','!=',140]]}"/>
+          <field name="direct_purchase" attrs="{'invisible': [['project_id','!=',140]]}"/>
+          <field name="indirect_purchase" attrs="{'invisible': [['project_id','!=',140]]}"/>
+          <field name="delivery_step" attrs="{'invisible': [['project_id','!=',140]]}"/>
+        </xpath>
+      </field>
+    </record>
+
+    <menuitem 
+      name="Tracking Purchases" 
+      id="gse_custo_action_menu" 
+      parent="project.menu_main_pm"
+      action="gse_custo_action"
+      groups="purchase.group_purchase_manager"
+      sequence="102"/>
+
+      
+    <record id="gse_tracking_purchase_inherit" model="ir.ui.view">
+      <field name="name">gse_purchase_tracking.picking.view.form.inherit</field>
+      <field name="model">stock.picking</field>
+      <field name="inherit_id" ref="stock.view_picking_form"/>
+      <field name="priority">99</field>
+      <field name="arch" type="xml">
+        <data>
+          <xpath expr="//field[@name='carrier_id']" position="after">
+            <field name="departure_date"/>
+            <field name="carrier_method"/>
+          </xpath>
+        </data>
+      </field>
+    </record>
+
+    <record id="view_purchas_tracking_filter" model="ir.ui.view">
+      <field name="name">gse.purchase.tracking.search</field>
+      <field name="model">project.task</field>
+      <field name="priority">15</field>
+      <field name="arch" type="xml">
+        <search string="Search Purchases">
+          <filter string="In Progress" name="in_progress"
+            domain="['&amp;', '&amp;', ('stage_id', 'not ilike', 'Consolidé'), ('stage_id', 'not ilike', 'Terminé'), ('stage_id', 'not ilike', 'Refusé')]"
+            help="Purchases In Progress"/>
+            
+            <field name="name" string="Task Name"/>
+            <field name="dp_name"/>
+            <field name="ip_name"/>
+            <separator/>
+            <filter name="order_date" string="Order Date" date="dp_date_approve"/>
+            <separator/>
+            <group expand="0" string="Group By">
+                <filter string="Final Destination Receipt Status" name="fd_receipt_status" domain="[]" context="{'group_by': 'fd_receipt_status'}"/>
+                <filter string="Forwarder" name="forwarder" domain="[]" context="{'group_by': 'fd_forwarder_method'}"/>
+                <filter string="Confirmation Order Date" name="dp_date_approve" domain="[]" context="{'group_by': 'dp_date_approve'}"/>
+           </group>
+        </search>
+      </field>
+    </record>
+
+  </data>
+</odoo>
