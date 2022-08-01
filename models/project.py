@@ -2,8 +2,6 @@
 
 from odoo import api, fields, models
 
-from odoo.addons.gse_purchase_tracking.models.stock_picking import CARRIER_METHOD
-
 INVOICE_STATUS = [
     ('upselling', 'Upselling Opportunity'),
     ('invoiced', 'Fully Invoiced'),
@@ -18,6 +16,10 @@ class Tasks(models.Model):
     sale_order = fields.Many2one("sale.order", string="Final Customer SO")
     direct_purchase = fields.Many2one("purchase.order", string="Ref Final Supplier")
     indirect_purchase = fields.Many2one("purchase.order", string="Ref Atimex")
+
+    purchase = fields.Many2one('purchase.order', compute='_compute_purchase', store=True)
+    purchase_picking_id = fields.Many2many('stock.picking', compute='_compute_purchase_picking_id', store=True)
+
     delivery_step = fields.Selection([
         ('1', '1. PO Accepted'),
         ('2', '2. in Manufacturing'),
@@ -49,18 +51,14 @@ class Tasks(models.Model):
     ip_date_done = fields.Datetime(related="indirect_purchase.picking_ids.date_done", string="Effective Date in Atimex")
     ip_billing_status = fields.Selection(related="indirect_purchase.invoice_status", string="Atimex Billing Status")
 
-    fd_location_dest = fields.Char(compute="_compute_final_location_dest", string="Destination")
-    fd_scheduled_date = fields.Datetime(compute="_compute_final_dest_date", string="Final Dest. Scheduled Date")
-    fd_forwarder = fields.Char(compute="_compute_final_forwarder", string="Forwarder")
-    fd_date_done = fields.Datetime(compute="_compute_final_effective_date", string="Final Effective Date")
-    fd_forwarder_ref = fields.Char(compute="_compute_final_forwarder_ref", string="Forwarder Ref")
-    fd_forwarder_method = fields.Selection(CARRIER_METHOD, compute="_compute_forwarder_method", string="Forwarder Method")
-    fd_departure_date = fields.Date(compute="_compute_departure_date", string="Departure Date")
-    fd_receipt_status = fields.Selection([
-        ('pending', 'Not Received'),
-        ('partial', 'Partially Received'),
-        ('full', 'Fully Received'),
-    ], compute="_compute_receipt_status", string="Final Destination Status")
+    fd_location_dest = fields.Char(related="purchase_picking_id.location_dest_id.warehouse_id.name", string="Destination")
+    fd_scheduled_date = fields.Datetime(related="purchase_picking_id.scheduled_date", string="Final Dest. Scheduled Date")
+    fd_forwarder = fields.Char(related="purchase_picking_id.carrier_id.name", string="Forwarder")
+    fd_date_done = fields.Datetime(related="purchase_picking_id.date_done", string="Final Effective Date")
+    fd_forwarder_ref = fields.Char(related="purchase_picking_id.carrier_tracking_ref", string="Forwarder Ref")
+    fd_forwarder_method = fields.Selection(related="purchase_picking_id.carrier_method", string="Forwarder Method")
+    fd_departure_date = fields.Datetime(related="purchase_picking_id.departure_date", string="Departure Date")
+    fd_receipt_status = fields.Selection(related="purchase.receipt_status", string="Final Destination Status")
     at_receipt_status = fields.Selection([
         ('empty', ''),
         ('pending', 'Not Received'),
@@ -68,81 +66,23 @@ class Tasks(models.Model):
         ('full', 'Fully Received'),
     ], compute="_compute_at_receipt_status", string="Atimex Reception Status")
 
-    @api.depends("indirect_purchase.name", "direct_purchase.picking_ids.location_dest_id", "indirect_purchase.picking_ids.location_dest_id")
-    def _compute_final_location_dest(self):
+    @api.depends('indirect_purchase', 'direct_purchase')
+    def _compute_purchase(self):
         for record in self:
-            if record.indirect_purchase.name:
-                purch = record.indirect_purchase
-            else:
-                purch = record.direct_purchase
-            record.fd_location_dest = purch.picking_ids and purch.picking_ids.sorted('create_date', reverse=True)[0].location_dest_id.warehouse_id.name or False
+            record.purchase = record.indirect_purchase or record.direct_purchase
 
-    @api.depends("indirect_purchase.name", "direct_purchase.picking_ids.date_done", "indirect_purchase.picking_ids.date_done")
-    def _compute_final_effective_date(self):
+    @api.depends('purchase', 'purchase.picking_ids')
+    def _compute_purchase_picking_id(self):
         for record in self:
-            if record.indirect_purchase.name:
-                purch = record.indirect_purchase
+            if record.purchase.picking_ids:
+                record.purchase_picking_id = record.purchase.picking_ids.sorted('create_date', reverse=True)[0]
             else:
-                purch = record.direct_purchase
-            record.fd_date_done = purch.picking_ids and purch.picking_ids.sorted('create_date', reverse=True)[0].date_done or False
+                record.purchase_picking_id = self.env['stock.picking']
 
-    @api.depends("indirect_purchase.name", "direct_purchase.receipt_status", "indirect_purchase.receipt_status")
-    def _compute_receipt_status(self):
-        for record in self:
-            if record.indirect_purchase.name:
-                record.fd_receipt_status = record.indirect_purchase.receipt_status
-            else:
-                record.fd_receipt_status = record.direct_purchase.receipt_status
-
-    @api.depends("indirect_purchase.name", "direct_purchase.receipt_status", "indirect_purchase.receipt_status")
+    @api.depends("indirect_purchase", "direct_purchase.receipt_status", "indirect_purchase.receipt_status")
     def _compute_at_receipt_status(self):
         for record in self:
-            if record.indirect_purchase.name:
+            if record.indirect_purchase:
                 record.at_receipt_status = record.indirect_purchase.receipt_status
             else:
                 record.at_receipt_status == 'empty'
-
-    @api.depends("indirect_purchase.name", "direct_purchase.picking_ids.scheduled_date", "indirect_purchase.picking_ids.scheduled_date")
-    def _compute_final_dest_date(self):
-        for record in self:
-            if record.indirect_purchase.name:
-                purch = record.indirect_purchase
-            else:
-                purch = record.direct_purchase
-            record.fd_scheduled_date = purch.picking_ids and purch.picking_ids.sorted('create_date', reverse=True)[0].scheduled_date or False
-
-    @api.depends("indirect_purchase.name", "direct_purchase.picking_ids.carrier_id.name", "indirect_purchase.picking_ids.carrier_id.name")
-    def _compute_final_forwarder(self):
-        for record in self:
-            if record.indirect_purchase.name:
-                purch = record.indirect_purchase
-            else:
-                purch = record.direct_purchase
-            record.fd_forwarder = purch.picking_ids and purch.picking_ids.sorted('create_date', reverse=True)[0].carrier_id.name or False
-
-    @api.depends("indirect_purchase.name", "direct_purchase.picking_ids.carrier_tracking_ref", "indirect_purchase.picking_ids.carrier_tracking_ref")
-    def _compute_final_forwarder_ref(self):
-        for record in self:
-            if record.indirect_purchase.name:
-                purch = record.indirect_purchase
-            else:
-                purch = record.direct_purchase
-            record.fd_forwarder_ref = purch.picking_ids and purch.picking_ids.sorted('create_date', reverse=True)[0].carrier_tracking_ref or False
-
-    @api.depends("indirect_purchase.name", "direct_purchase.picking_ids.carrier_method", "indirect_purchase.picking_ids.carrier_method")
-    def _compute_forwarder_method(self):
-        for record in self:
-            if record.indirect_purchase.name:
-                purch = record.indirect_purchase
-            else:
-                purch = record.direct_purchase
-            record.fd_forwarder_method = purch.picking_ids and purch.picking_ids.sorted('create_date', reverse=True)[0].carrier_method or False
-
-    @api.depends("indirect_purchase.name", "direct_purchase.picking_ids.departure_date", "indirect_purchase.picking_ids.departure_date")
-    def _compute_departure_date(self):
-        for record in self:
-            if record.indirect_purchase.name:
-                purch = record.indirect_purchase
-            else:
-                purch = record.direct_purchase
-            record.fd_departure_date = purch.picking_ids and purch.picking_ids.sorted('create_date', reverse=True)[0].departure_date or False
