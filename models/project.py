@@ -98,7 +98,7 @@ class Tasks(models.Model):
     def _compute_at_receipt_status(self):
         for record in self:
             if record.indirect_purchase.name:
-                record.at_receipt_status = record.direct_purchase.receipt_status
+                record.at_receipt_status = record.indirect_purchase.receipt_status
             else:
                 record.at_receipt_status == 'empty'
 
