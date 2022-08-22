@@ -34,8 +34,8 @@ class Tasks(models.Model):
         ('11', '11. Received')
     ], string="Delivery Step")
 
-    final_supplier = fields.Char(related="direct_purchase.partner_id.name", string="Final Supplier")
-    dp_name = fields.Char(related="direct_purchase.name", string="PO Ref")
+    final_supplier = fields.Char(related="direct_purchase.partner_id.name", string="Final Supplier", store=True)
+    dp_name = fields.Char(related="direct_purchase.name", string="PO Ref", store=True)
     dp_po_state = fields.Selection(related="direct_purchase.state", string="PO Status")
     dp_receipt_status = fields.Selection(related="direct_purchase.receipt_status", string="Dir. Recept. Status")
     dp_date_approve = fields.Datetime(related="direct_purchase.date_approve", string="Conf. Final Sup. Date")
@@ -43,28 +43,28 @@ class Tasks(models.Model):
     dp_billing_status = fields.Selection(related="direct_purchase.invoice_status", string="Billing Status")
 
     indirect_supplier = fields.Char(related="indirect_purchase.partner_id.name", string="Indirect Supplier - Atimex")
-    ip_name = fields.Char(related="indirect_purchase.name", string="PO Atimex")
+    ip_name = fields.Char(related="indirect_purchase.name", string="PO Atimex", store=True)
     ip_po_state = fields.Selection(related="indirect_purchase.state", string="PO Atimex Status")
     ip_receipt_status = fields.Selection(related="indirect_purchase.receipt_status", string="Rec. Status Atimex")
     ip_date_approve = fields.Datetime(related="indirect_purchase.date_approve", string="Conf. Date Atimex")
     ip_date_scheduled = fields.Datetime(related="indirect_purchase.picking_ids.scheduled_date", string="Scheduled Date")
     ip_date_done = fields.Datetime(related="indirect_purchase.picking_ids.date_done", string="Effective Date in Atimex")
-    ip_billing_status = fields.Selection(related="indirect_purchase.invoice_status", string="Atimex Billing Status")
+    ip_billing_status = fields.Selection(related="indirect_purchase.invoice_status", string="Atimex Billing Status", store=True)
 
-    fd_location_dest = fields.Char(related="purchase_picking_id.location_dest_id.warehouse_id.name", string="Destination")
+    fd_location_dest = fields.Char(related="purchase_picking_id.location_dest_id.warehouse_id.name", string="Destination", store=True)
     fd_scheduled_date = fields.Datetime(related="purchase_picking_id.scheduled_date", string="Final Dest. Scheduled Date")
-    fd_forwarder = fields.Char(related="purchase_picking_id.carrier_id.name", string="Forwarder")
+    fd_forwarder = fields.Char(related="purchase_picking_id.carrier_id.name", string="Forwarder", store=True)
     fd_date_done = fields.Datetime(related="purchase_picking_id.date_done", string="Final Effective Date")
-    fd_forwarder_ref = fields.Char(related="purchase_picking_id.carrier_tracking_ref", string="Forwarder Ref")
+    fd_forwarder_ref = fields.Char(related="purchase_picking_id.carrier_tracking_ref", string="Forwarder Ref", store=True)
     fd_forwarder_method = fields.Selection(related="purchase_picking_id.carrier_method", string="Forwarder Method")
     fd_departure_date = fields.Datetime(related="purchase_picking_id.departure_date", string="Departure Date")
-    fd_receipt_status = fields.Selection(related="purchase.receipt_status", string="Final Destination Status")
+    fd_receipt_status = fields.Selection(related="purchase.receipt_status", string="Final Destination Status", store=True)
     at_receipt_status = fields.Selection([
         ('empty', ''),
         ('pending', 'Not Received'),
         ('partial', 'Partially Received'),
         ('full', 'Fully Received'),
-    ], compute="_compute_at_receipt_status", string="Atimex Reception Status")
+    ], compute="_compute_at_receipt_status", string="Atimex Reception Status", store=True)
 
     @api.depends('indirect_purchase', 'direct_purchase')
     def _compute_purchase(self):
