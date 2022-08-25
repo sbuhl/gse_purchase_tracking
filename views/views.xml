@@ -25,7 +25,7 @@
           <field name="fd_receipt_status" optional="show"/>
           <field name="dp_receipt_status" optional="hide"/>
           <field name="fd_date_done" optional="show" widget="date"/>
-          
+
           <field name="fd_forwarder" optional="show"/>
           <field name="fd_forwarder_ref" optional="show"/>
           <field name="fd_forwarder_method" optional="hide"/>
@@ -59,15 +59,15 @@
       </field>
     </record>
 
-    <menuitem 
-      name="Tracking Purchases" 
-      id="gse_custo_action_menu" 
+    <menuitem
+      name="Tracking Purchases"
+      id="gse_custo_action_menu"
       parent="project.menu_main_pm"
       action="gse_custo_action"
       groups="purchase.group_purchase_manager"
       sequence="102"/>
 
-      
+
     <record id="gse_tracking_purchase_inherit" model="ir.ui.view">
       <field name="name">gse_purchase_tracking.picking.view.form.inherit</field>
       <field name="model">stock.picking</field>
@@ -92,16 +92,15 @@
           <filter string="In Progress" name="in_progress"
             domain="['&amp;', '&amp;', ('stage_id', 'not ilike', 'Consolidé'), ('stage_id', 'not ilike', 'Terminé'), ('stage_id', 'not ilike', 'Refusé')]"
             help="Purchases In Progress"/>
-            
+          <filter string="Forwarder Ref" name="fd_forwarder_ref" domain="[('fd_forwarder_ref', '!=', False)]"/>
+
             <field name="name" string="Task Name"/>
             <field name="dp_name"/>
             <field name="ip_name"/>
             <separator/>
-            <filter name="order_date" string="Order Date" date="dp_date_approve"/>
-            <separator/>
             <group expand="0" string="Group By">
                 <filter string="Final Destination Receipt Status" name="fd_receipt_status" domain="[]" context="{'group_by': 'fd_receipt_status'}"/>
-                <filter string="Forwarder" name="forwarder" domain="[]" context="{'group_by': 'fd_forwarder_method'}"/>
+                <filter string="Forwarder Method" name="fd_forwarder_method" domain="[]" context="{'group_by': 'fd_forwarder_method'}"/>
                 <filter string="Confirmation Order Date" name="dp_date_approve" domain="[]" context="{'group_by': 'dp_date_approve'}"/>
            </group>
         </search>
