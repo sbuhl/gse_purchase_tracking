@@ -78,7 +78,7 @@
     'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
-    'depends': ['gse_picking_status', 'project', 'delivery'],
+    'depends': ['gse_picking_status', 'project', 'delivery', 'purchase'],
 
     'data': [       
         'views/views.xml',
