@@ -51,10 +51,10 @@
       <field name="arch" type="xml">
         <xpath expr="//form[1]/sheet[1]/group[1]/group[1]/field[@name='user_ids']" position="after">
           <!-- 140 = Projet Achats Internationaux  /// 184 = Projet Achats Locaux-->
-          <field name="sale_order" attrs="{'invisible': ['&amp;',['project_id','!=',140],['project_id','!=',238]]}"/>
-          <field name="direct_purchase" attrs="{'invisible': ['&amp;',['project_id','!=',140],['project_id','!=',238]]}"/>
-          <field name="indirect_purchase" attrs="{'invisible': [['project_id','!=',140]]}"/>
-          <field name="delivery_step" attrs="{'invisible': [['project_id','!=',140]]}"/>
+          <field name="sale_order" attrs="{'invisible': ['&amp;',['project_id','!=',251],['project_id','!=',238]]}"/>
+          <field name="direct_purchase" attrs="{'invisible': ['&amp;',['project_id','!=',251],['project_id','!=',238]]}"/>
+          <field name="indirect_purchase" attrs="{'invisible': [['project_id','!=',251]]}"/>
+          <field name="delivery_step" attrs="{'invisible': [['project_id','!=',251]]}"/>
         </xpath>
       </field>
     </record>
