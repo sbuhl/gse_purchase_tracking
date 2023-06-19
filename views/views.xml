@@ -99,6 +99,7 @@
             <field name="ip_name"/>
             <separator/>
             <group expand="0" string="Group By">
+                <filter string="Final Destination Location" name="fd_location_dest" domain="[]" context="{'group_by': 'fd_location_dest'}"/>
                 <filter string="Final Destination Receipt Status" name="fd_receipt_status" domain="[]" context="{'group_by': 'fd_receipt_status'}"/>
                 <filter string="Forwarder Method" name="fd_forwarder_method" domain="[]" context="{'group_by': 'fd_forwarder_method'}"/>
                 <filter string="Confirmation Order Date" name="dp_date_approve" domain="[]" context="{'group_by': 'dp_date_approve'}"/>
