@@ -43,6 +43,7 @@
       <field name="context">{"search_default_in_progress":1}</field>
       <field name="view_mode">tree,form</field>
       <field name="view_id" ref="gse_tracking_tree"/>
+      <field name="groups" eval="[(4, ref('group_purchase_purchase_tracker'))]"/>
     </record>
 
     <record id="gse_purchase_tracking_task_form" model="ir.ui.view">
@@ -65,7 +66,7 @@
       id="gse_custo_action_menu"
       parent="project.menu_main_pm"
       action="gse_custo_action"
-      groups="purchase.group_purchase_manager"
+      groups="group_purchase_purchase_tracker"
       sequence="102"/>
 
 
