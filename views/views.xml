@@ -29,7 +29,8 @@
           <field name="fd_forwarder" optional="show"/>
           <field name="fd_forwarder_ref" optional="show"/>
           <field name="fd_forwarder_method" optional="hide"/>
-          <field name="delivery_step" optional="show"/>
+          <field name="inspection_status" optional="show"/>
+          <field name="delivery_step" optional="hiden"/>
           <field name="fd_departure_date" optional="show" readonly="False"/>
         </tree>
       </field>

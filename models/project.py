@@ -19,6 +19,16 @@ class Tasks(models.Model):
 
     purchase = fields.Many2one('purchase.order', compute='_compute_purchase', store=True)
     purchase_picking_id = fields.Many2many('stock.picking', compute='_compute_purchase_picking_id', store=True)
+    
+    inspection_status = fields.Selection([
+        ('1', '1. License opening requested'),
+        ('2', '2. RFI received'),
+        ('3', '3. RFI sent'),
+        ('4', '4. FDR received'),
+        ('5', '5. FDR sent'),
+        ('6', '6. ARA received - action to be taken'),
+        ('7', '7. AV received - fisnish')
+    ], string="Status inspection BIVAC")
 
     delivery_step = fields.Selection([
         ('1', '1. PO Accepted'),
