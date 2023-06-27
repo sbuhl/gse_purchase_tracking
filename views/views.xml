@@ -30,6 +30,7 @@
           <field name="fd_forwarder_ref" optional="show"/>
           <field name="fd_forwarder_method" optional="hide"/>
           <field name="inspection_status" optional="show"/>
+          <field name="kanban_state" optional="show" widget="kanban_state_selection"/>
           <field name="delivery_step" optional="hiden"/>
           <field name="fd_departure_date" optional="show" readonly="False"/>
         </tree>
