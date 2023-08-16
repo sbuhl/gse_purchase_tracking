@@ -80,9 +80,10 @@
     # any module necessary for this one to work correctly
     'depends': ['gse_picking_status', 'project', 'delivery'],
 
-    'data': [       
+    'data': [
+        'security/security.xml',
         'views/views.xml',
         'views/purchase.xml',
     ],
-    
+
 }
