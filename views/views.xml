@@ -94,6 +94,12 @@
           <filter string="In Progress" name="in_progress"
             domain="['&amp;', '&amp;', ('stage_id', 'not ilike', 'Consolidé'), ('stage_id', 'not ilike', 'Terminé'), ('stage_id', 'not ilike', 'Refusé')]"
             help="Purchases In Progress"/>
+          <filter string="Achat clôturé" name="finished"
+            domain="[["&","&","&",["at_receipt_status","=","full"],["ip_billing_status","=","invoiced"],["ip_receipt_status","=","full"],["dp_billing_status","=","invoiced"]]]"
+            help="Custom Filter Description"/>
+
+
+
           <filter string="Forwarder Ref" name="fd_forwarder_ref" domain="[('fd_forwarder_ref', '!=', False)]"/>
 
             <field name="name" string="Task Name"/>
