@@ -50,7 +50,7 @@ class Tasks(models.Model):
     dp_receipt_status = fields.Selection(related="direct_purchase.receipt_status", string="Dir. Recept. Status")
     dp_date_approve = fields.Datetime(related="direct_purchase.date_approve", string="Conf. Final Sup. Date", store=True)
     dp_date_done = fields.Datetime(related="direct_purchase.picking_ids.date_done", string="Effective Date")
-    dp_billing_status = fields.Selection(related="direct_purchase.invoice_status", string="Billing Status")
+    dp_billing_status = fields.Selection(related="direct_purchase.invoice_status", string="Billing Status", store=True)
 
     indirect_supplier = fields.Char(related="indirect_purchase.partner_id.name", string="Indirect Supplier - Atimex")
     ip_name = fields.Char(related="indirect_purchase.name", string="PO Atimex", store=True)
