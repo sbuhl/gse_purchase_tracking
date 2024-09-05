@@ -61,14 +61,14 @@ class Tasks(models.Model):
     ip_date_done = fields.Datetime(related="indirect_purchase.picking_ids.date_done", string="Effective Date in Atimex")
     ip_billing_status = fields.Selection(related="indirect_purchase.invoice_status", string="Atimex Billing Status", store=True)
 
-    fd_location_dest = fields.Char(related="purchase_picking_id.location_dest_id.warehouse_id.name", string="Destination", store=True)
+    fd_location_dest = fields.Char(related="purchase_picking_id.location_dest_id.warehouse_id.name", string="Destination", store=True, translate=False)
     fd_scheduled_date = fields.Datetime(related="purchase_picking_id.scheduled_date", string="Final Dest. Scheduled Date")
-    fd_forwarder = fields.Char(related="purchase_picking_id.carrier_id.name", string="Forwarder", store=True)
+    fd_forwarder = fields.Char(related="purchase_picking_id.carrier_id.name", string="Forwarder", store=True, translate=False)
     fd_date_done = fields.Datetime(related="purchase_picking_id.date_done", string="Final Effective Date")
-    fd_forwarder_ref = fields.Char(related="purchase_picking_id.carrier_tracking_ref", string="Forwarder Ref", store=True)
-    fd_forwarder_method = fields.Selection(related="purchase_picking_id.carrier_method", string="Forwarder Method", store=True)
+    fd_forwarder_ref = fields.Char(related="purchase_picking_id.carrier_tracking_ref", string="Forwarder Ref", store=True, translate=False)
+    fd_forwarder_method = fields.Selection(related="purchase_picking_id.carrier_method", string="Forwarder Method", store=True, translate=False)
     fd_departure_date = fields.Datetime(related="purchase_picking_id.departure_date", string="Departure Date")
-    fd_receipt_status = fields.Selection(related="purchase.receipt_status", string="Final Destination Status", store=True)
+    fd_receipt_status = fields.Selection(related="purchase.receipt_status", string="Final Destination Status", store=True, translate=False)
     at_receipt_status = fields.Selection([
         ('empty', ''),
         ('pending', 'Not Received'),
