@@ -12,10 +12,10 @@
           <field name="dp_po_state" optional="hide"/>
           <field name="dp_billing_status" optional="show"/>
 
-          <field name="ip_date_approve" optional="hide" widget="date"/>
-          <field name="indirect_supplier" optional="hide"/>
+          <field name="ip_date_approve" optional="hiden" widget="date"/>
+          <field name="indirect_supplier" optional="hiden"/>
           <field name="ip_name" optional="show"/>
-          <field name="ip_po_state" optional="hide"/>
+          <field name="ip_po_state" optional="hiden"/>
           <field name="ip_date_scheduled" optional="show" widget="date"/>
           <field name="at_receipt_status" optional="show"/>
           <field name="ip_billing_status" optional="show"/>
@@ -28,9 +28,9 @@
 
           <field name="fd_forwarder" optional="show"/>
           <field name="fd_forwarder_ref" optional="show"/>
-          <field name="fd_forwarder_method" optional="hide"/>
+          <field name="fd_forwarder_method" optional="hiden"/>
           <field name="inspection_status" optional="show"/>
-          <!-- <field name="kanban_state" optional="show" widget="kanban_state_selection"/> -->
+          <field name="state" optional="show"/>
           <field name="delivery_step" optional="hiden"/>
           <field name="fd_departure_date" optional="show" readonly="False"/>
         </tree>
@@ -53,10 +53,10 @@
       <field name="arch" type="xml">
         <xpath expr="//form[1]/sheet[1]/group[1]/group[1]/field[@name='user_ids']" position="after">
           <!-- 140 = Projet Achats Internationaux  /// 184 = Projet Achats Locaux-->
-          <field name="sale_order" invisible="project_id not in (251, 238)"/>
-          <field name="direct_purchase" invisible="project_id not in (251, 238)"/>
-          <field name="indirect_purchase" invisible="project_id != 251"/>
-          <field name="delivery_step" invisible="project_id != 251"/>
+          <field name="sale_order" modifiers="{'invisible': [['&amp;', ['project_id', '!=', 251], ['project_id', '!=', 238]]]}"/>
+          <field name="direct_purchase" modifiers="{'invisible': [['&amp;', ['project_id', '!=', 251], ['project_id', '!=', 238]]]}"/>
+          <field name="indirect_purchase" modifiers="{'invisible': [['project_id', '!=', 251]]}"/>
+          <field name="delivery_step" modifiers="{'invisible': [['project_id', '!=', 251]]}"/>
         </xpath>
       </field>
     </record>
